@@ -24,6 +24,6 @@ from . import views
 
 
 urlpatterns = [
-    path('home/',views.Room_list_create.as_view() )
+    path('api/',views.Room_list_create.as_view() )
     
 ]

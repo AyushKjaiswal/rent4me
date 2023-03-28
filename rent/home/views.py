@@ -2,6 +2,7 @@ from .models import *
 from .serializers import *
 from rest_framework.generics import ListAPIView,CreateAPIView,UpdateAPIView, RetrieveAPIView,DestroyAPIView,ListCreateAPIView,RetrieveUpdateDestroyAPIView
 from django.shortcuts import render
+from django.db.models import Q
 
 # class studentAPI_list_create(ListCreateAPIView):
 #     queryset = students_Details.objects.all()
@@ -16,10 +17,6 @@ class Room_list_create(ListCreateAPIView,RetrieveUpdateDestroyAPIView):
     # queryset = Room.objects.all()
     serializer_class = RoomSerializer
     def get_queryset(self):
-        """
-        Optionally restricts the returned purchases to a given user,
-        by filtering against a `username` query parameter in the URL.
-        """
         queryset = Room.objects.all()
         sortby = self.request.query_params.get('sort_by')
         amount = self.request.query_params.get('amount')
@@ -35,7 +32,13 @@ class Room_list_create(ListCreateAPIView,RetrieveUpdateDestroyAPIView):
             ids = []
             for id in tag_id:
                 ids.append(int(id))
-            queryset = queryset.filter(room_tag__in = ids).distinct()
+
+            q_objects = Q()
+            for id in ids:
+                q_objects |= Q(room_tag = id)
+                
+            # queryset = queryset.filter(room_tag__in = ids).distinct()
+            queryset = queryset.filter(q_objects).distinct()
         return queryset
 
 
